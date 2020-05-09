@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Foundry Spatial</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- ======= Header  ======= -->
+    <header>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col">
+                    <h1 class="display-4">My Favourite Restaurant</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ======= Main ======= -->
+    <main id="main">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col">
+                    <input class="form-control" id="search" type="text" placeholder="Search..." value="Sura Korean Restaurant"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ======= Footer ======= -->
+    <footer id="footer">
+        <div class="container-fluid">
+          <div class="copyright">
+            &copy; Copyright <strong>Ownagon</strong>. All Rights Reserved
+          </div>
+        </div>
+    </footer>
+
+    <!-- bootstrap scripts -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+    <!-- Google Map scripts -->
+    <script>
+    var map;
+    var service;
+    var infoWindow; 
+
+    function createMarker(place) {
+        var marker = new google.maps.Marker({
+            map: map,
+            position: place.geometry.location
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+            infoWindow.setContent('<div><strong>' + place.name + '</strong><br>' +
+            'Location Coordinates: ' + place.geometry.location + '</div>');
+            infoWindow.open(map, this);
+        });
+    }
+    function initMap() {
+        // Basemap environment
+        var victoria = new google.maps.LatLng(48.4284, -123.3656);
+        var options = {
+            // center: {lat: 48.4284, lng: -123.3656},
+            center: victoria,
+            zoom: 12, 
+            mapTypeId: google.maps.MapTypeId.HYBRID
+        }; 
+
+        // Create map 
+        map = new google.maps.Map(document.getElementById('map'), options);
+
+        // POI Approach 1: 
+        // Create info window 
+        infoWindow = new google.maps.InfoWindow(); 
+
+        var request = {
+            query: 'Sura Korean Restaurant',
+            fields: ['name', 'geometry'],
+        };
+
+        service = new google.maps.places.PlacesService(map);
+
+        service.findPlaceFromQuery(request, function(results, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+            for (var i = 0; i < results.length; i++) {
+                createMarker(results[i]);
+            }
+            map.setCenter(results[0].geometry.location);
+            }
+        });
+
+        // POI Approach 2: 
+        // Create search box 
+        var input = document.getElementById('search'); 
+        var searchBox = new google.maps.places.SearchBox(input); 
+        
+        // Bias the SearchBox results towards current map's viewport.
+        map.addListener('bounds_changed', function(){
+            searchBox.setBounds(map.getBounds()); 
+        }); 
+
+        var markers = []; 
+
+        // Listen for the event fired when the user selects a prediction and retrieve more details for that place
+        searchBox.addListener('places_changed', function(){
+            var places = searchBox.getPlaces(); 
+            
+            if (places.length === 0){
+                return; 
+            }
+
+            // Clear out the old markers
+            markers.forEach(function(m){
+                m.setMap(null); 
+            }); 
+            markers = []; 
+
+            // For each place, get the icon, name and location.
+            var bounds = new google.maps.LatLngBounds(); 
+            places.forEach(function(p){
+                if(!p.geometry){
+                    console.log("Returned place contains no geometry");
+                    return; 
+                }
+
+                // Create a marker for each place
+                markers.push(new google.maps.Marker({
+                    map: map, 
+                    position: p.geometry.location
+                })); 
+                if (p.geometry.viewport){
+                    bounds.union(p.geometry.viewport); 
+                }else{
+                    bounds.extend(p.geometry.location); 
+                }
+                map.fitBounds(bounds); 
+            });
+        });
+    }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdj1_BDkG85qRAPlY9L93f4DVV4EQ5DOQ&libraries=places&callback=initMap"
+    async defer></script>
+</body>
+</html>
