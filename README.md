@@ -1,4 +1,4 @@
-> MAP DEMO APPLICATION
+> MAP DEMO APPLICATION: https://foundryspatial.herokuapp.com/
 1. Google Map Places API for My Favourite Restaurant: 
 - API URL: 
     + https://maps.googleapis.com/maps/api/place/textsearch/json?query=SuraKoreanRestaurant&key=AIzaSyCdj1_BDkG85qRAPlY9L93f4DVV4EQ5DOQ
