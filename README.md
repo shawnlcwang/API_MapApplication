@@ -23,15 +23,15 @@ https://maps.googleapis.com/maps/api/place/textsearch/json?query=SuraKoreanResta
 - Procfile
     > web: node ./src/app.js
 - Heroku deployment process
-    > a. heroku login
+    + a. heroku login
         > Logged in as shawnlcwang@gmail.com
-    > b. heroku create <foundryspatial>
+    + b. heroku create <foundryspatial>
         > https://foundryspatial.herokuapp.com/ | https://git.heroku.com/foundryspatial.git 
-    > c. push Procfile to Heroku
+    + c. push Procfile to Heroku
         > git add. 
         > git commit -m "update"
         > git push heroku master (require package.json for Node.js Buildpack)
-    > d. spin up a server: 
+    + d. spin up a server: 
         > heroku ps:scale web=1
         > heroku open
 
