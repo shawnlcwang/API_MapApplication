@@ -34,9 +34,3 @@
         > heroku ps:scale web=1 | 
         > heroku open
 
-> Pseudo-code challenges
-1. Code Challenge: 
-- Solution.java
-
-2. SQL Query:  
-- Solution.sql
